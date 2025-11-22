@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@primevue/themes": "^4.4.1",
+    "@tailwindcss/postcss": "^4.1.17",
     "pinia": "^3.0.4",
     "pinia-plugin-persistedstate": "^4.7.1",
     "primevue": "^4.4.1",
