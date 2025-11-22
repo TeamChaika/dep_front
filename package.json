@@ -1,0 +1,20 @@
+{
+  "name": "deposits-tickets-frontend",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node node_modules/vite/bin/vite.js",
+    "build": "node node_modules/vite/bin/vite.js build",
+    "preview": "node node_modules/vite/bin/vite.js preview"
+  },
+  "dependencies": {
+    "pinia": "^2.1.7",
+    "vue": "^3.5.3",
+    "vue-router": "^4.4.3"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.1.2",
+    "vite": "^6.0.0"
+  }
+}
