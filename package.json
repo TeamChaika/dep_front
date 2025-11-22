@@ -9,12 +9,18 @@
     "preview": "node node_modules/vite/bin/vite.js preview"
   },
   "dependencies": {
+    "@primevue/themes": "^4.4.1",
     "pinia": "^2.1.7",
+    "pinia-plugin-persistedstate": "^4.7.1",
+    "primevue": "^4.4.1",
     "vue": "^3.5.3",
     "vue-router": "^4.4.3"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.1.2",
+    "autoprefixer": "^10.4.22",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.17",
     "vite": "^6.0.0"
   }
 }

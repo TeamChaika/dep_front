@@ -1,11 +1,5 @@
 import { defineStore } from "pinia";
-import {
-  createEvent,
-  getEvents,
-  getEventById,
-  updateEvent,
-  deleteEvent,
-} from "../services/api";
+import { eventService } from "../services/event.service";
 import { useAuthStore } from "./auth";
 
 export const useEventStore = defineStore("event", {
@@ -24,7 +18,7 @@ export const useEventStore = defineStore("event", {
       }
 
       await this.executeTask(async () => {
-        const response = await getEvents(authStore.accessToken, establishmentId);
+        const response = await eventService.getAll(authStore.accessToken, establishmentId);
         this.events = response;
         this.statusMessage = "События загружены";
       });
@@ -36,7 +30,7 @@ export const useEventStore = defineStore("event", {
       }
 
       await this.executeTask(async () => {
-        const response = await getEventById(id, authStore.accessToken);
+        const response = await eventService.getById(id, authStore.accessToken);
         this.currentEvent = response;
       });
     },
@@ -47,7 +41,7 @@ export const useEventStore = defineStore("event", {
       }
 
       await this.executeTask(async () => {
-        const response = await createEvent(payload, authStore.accessToken);
+        const response = await eventService.create(payload, authStore.accessToken);
         this.events.unshift(response);
         this.statusMessage = "Событие успешно создано";
         return response;
@@ -60,7 +54,7 @@ export const useEventStore = defineStore("event", {
       }
 
       await this.executeTask(async () => {
-        const response = await updateEvent(id, payload, authStore.accessToken);
+        const response = await eventService.update(id, payload, authStore.accessToken);
         const index = this.events.findIndex((e) => e.id === id);
         if (index !== -1) {
           this.events[index] = response;
@@ -79,7 +73,7 @@ export const useEventStore = defineStore("event", {
       }
 
       await this.executeTask(async () => {
-        await deleteEvent(id, authStore.accessToken);
+        await eventService.delete(id, authStore.accessToken);
         this.events = this.events.filter((e) => e.id !== id);
         if (this.currentEvent?.id === id) {
           this.currentEvent = null;
@@ -101,4 +95,3 @@ export const useEventStore = defineStore("event", {
     },
   },
 });
-

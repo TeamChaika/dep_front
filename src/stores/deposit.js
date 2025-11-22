@@ -1,12 +1,5 @@
 import { defineStore } from "pinia";
-import {
-  createDeposit,
-  getDeposits,
-  getDepositById,
-  getDepositByLink,
-  updateDeposit,
-  deleteDeposit,
-} from "../services/api";
+import { depositService } from "../services/deposit.service";
 import { useAuthStore } from "./auth";
 
 export const useDepositStore = defineStore("deposit", {
@@ -25,7 +18,7 @@ export const useDepositStore = defineStore("deposit", {
       }
 
       await this.executeTask(async () => {
-        const response = await getDeposits(
+        const response = await depositService.getAll(
           authStore.accessToken,
           establishmentId,
           eventId
@@ -41,13 +34,13 @@ export const useDepositStore = defineStore("deposit", {
       }
 
       await this.executeTask(async () => {
-        const response = await getDepositById(id, authStore.accessToken);
+        const response = await depositService.getById(id, authStore.accessToken);
         this.currentDeposit = response;
       });
     },
     async fetchDepositByLink(paymentLink) {
       await this.executeTask(async () => {
-        const response = await getDepositByLink(paymentLink);
+        const response = await depositService.getByLink(paymentLink);
         this.currentDeposit = response;
       });
     },
@@ -58,7 +51,7 @@ export const useDepositStore = defineStore("deposit", {
       }
 
       await this.executeTask(async () => {
-        const response = await createDeposit(payload, authStore.accessToken);
+        const response = await depositService.create(payload, authStore.accessToken);
         this.deposits.unshift(response);
         this.statusMessage = "Депозит успешно создан";
         return response;
@@ -71,7 +64,7 @@ export const useDepositStore = defineStore("deposit", {
       }
 
       await this.executeTask(async () => {
-        const response = await updateDeposit(id, payload, authStore.accessToken);
+        const response = await depositService.update(id, payload, authStore.accessToken);
         const index = this.deposits.findIndex((d) => d.id === id);
         if (index !== -1) {
           this.deposits[index] = response;
@@ -90,7 +83,7 @@ export const useDepositStore = defineStore("deposit", {
       }
 
       await this.executeTask(async () => {
-        await deleteDeposit(id, authStore.accessToken);
+        await depositService.delete(id, authStore.accessToken);
         this.deposits = this.deposits.filter((d) => d.id !== id);
         if (this.currentDeposit?.id === id) {
           this.currentDeposit = null;
@@ -112,4 +105,3 @@ export const useDepositStore = defineStore("deposit", {
     },
   },
 });
-

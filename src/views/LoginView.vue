@@ -1,179 +1,81 @@
 <script setup>
 import { ref } from "vue";
 import { useAuthStore } from "../stores/auth";
+import { useRouter } from "vue-router";
+
+// PrimeVue components
+import InputText from 'primevue/inputtext';
+import Button from 'primevue/button';
+import Password from 'primevue/password';
+import Card from 'primevue/card';
+import Message from 'primevue/message';
 
 const store = useAuthStore();
+const router = useRouter();
 
 const email = ref("");
 const password = ref("");
-const newPassword = ref("");
-const newEmail = ref("");
 
-const handleLogin = () =>
-  store.login({
+const handleLogin = async () => {
+  await store.login({
     email: email.value,
     password: password.value,
   });
-
-const handleChangePassword = () =>
-  store.changePassword({
-    access_token: store.accessToken,
-    new_password: newPassword.value,
-  });
-
-const handleChangeEmail = () =>
-  store.changeEmail({
-    access_token: store.accessToken,
-    new_email: newEmail.value,
-  });
-
-const handleLogout = () => store.logout();
+  if (store.accessToken) {
+    router.push("/establishments");
+  }
+};
 </script>
 
 <template>
-  <section class="card">
-    <h2>Вход</h2>
-    <form @submit.prevent="handleLogin">
-      <label>
-        Email
-        <input v-model="email" type="email" placeholder="user@example.com" required />
-      </label>
-      <label>
-        Пароль
-        <input v-model="password" type="password" placeholder="********" required />
-      </label>
-      <button :disabled="store.loading" type="submit">
-        {{ store.loading ? "..." : "Войти" }}
-      </button>
-    </form>
+  <Card class="w-full shadow-lg border-0">
+    <template #title>
+      <h2 class="text-2xl font-bold text-center text-slate-800 mb-2">Вход</h2>
+      <p class="text-center text-slate-500 text-sm font-normal">Добро пожаловать обратно</p>
+    </template>
+    <template #content>
+      <form @submit.prevent="handleLogin" class="space-y-5 mt-4">
+        <div class="flex flex-col gap-2">
+          <label for="email" class="text-sm font-medium text-slate-700">Email</label>
+          <InputText id="email" v-model="email" type="email" placeholder="user@example.com" class="w-full" required />
+        </div>
 
-    <p v-if="store.statusMessage" class="status success">{{ store.statusMessage }}</p>
-    <p v-if="store.errorMessage" class="status error">{{ store.errorMessage }}</p>
+        <div class="flex flex-col gap-2">
+          <label for="password" class="text-sm font-medium text-slate-700">Пароль</label>
+          <Password 
+            id="password" 
+            v-model="password" 
+            :feedback="false" 
+            toggleMask 
+            class="w-full" 
+            inputClass="w-full"
+            placeholder="********" 
+            required 
+          />
+        </div>
 
-    <div v-if="store.accessToken" class="token-box">
-      <strong>Access Token:</strong>
-      <code>{{ store.accessToken }}</code>
-      <button @click="handleLogout" class="logout-btn" :disabled="store.loading">
-        {{ store.loading ? "..." : "Выйти" }}
-      </button>
-    </div>
+        <Button 
+          type="submit" 
+          label="Войти" 
+          :loading="store.loading" 
+          class="w-full" 
+        />
 
-    <hr />
+        <div v-if="store.errorMessage" class="mt-4">
+          <Message severity="error" :closable="false" class="w-full">{{ store.errorMessage }}</Message>
+        </div>
 
-    <h3>Изменить пароль</h3>
-    <form @submit.prevent="handleChangePassword">
-      <label>
-        Новый пароль
-        <input v-model="newPassword" type="password" placeholder="********" required />
-      </label>
-      <button :disabled="store.loading || !store.accessToken" type="submit">
-        Изменить
-      </button>
-    </form>
-
-    <h3>Изменить email</h3>
-    <form @submit.prevent="handleChangeEmail">
-      <label>
-        Новый email
-        <input v-model="newEmail" type="email" placeholder="new@example.com" required />
-      </label>
-      <button :disabled="store.loading || !store.accessToken" type="submit">
-        Изменить
-      </button>
-    </form>
-  </section>
+        <div class="flex items-center justify-between mt-6 text-sm">
+          <router-link to="/register" class="text-primary-600 hover:text-primary-700 font-medium">Регистрация</router-link>
+          <router-link to="/forgot-password" class="text-slate-500 hover:text-slate-700">Забыли пароль?</router-link>
+        </div>
+      </form>
+    </template>
+  </Card>
 </template>
 
 <style scoped>
-.card {
-  width: min(480px, 100%);
-  padding: 2rem;
-  background: #fff;
-  border-radius: 1rem;
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.1);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-label {
-  display: flex;
-  flex-direction: column;
-  font-size: 0.9rem;
-  color: #475569;
-}
-
-input {
-  padding: 0.65rem;
-  border: 1px solid #cbd5f5;
-  border-radius: 0.5rem;
-}
-
-button {
-  padding: 0.75rem;
-  border: none;
-  border-radius: 0.5rem;
-  background: #2563eb;
-  color: #fff;
-  cursor: pointer;
-}
-
-button:disabled {
-  background: #94a3b8;
-  cursor: not-allowed;
-}
-
-.status {
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.5rem;
-}
-
-.success {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.error {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-.token-box {
-  word-break: break-all;
-  background: #0f172a;
-  color: #e2e8f0;
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.logout-btn {
-  padding: 0.5rem;
-  border: 1px solid #475569;
-  border-radius: 0.5rem;
-  background: #1e293b;
-  color: #e2e8f0;
-  cursor: pointer;
-  font-size: 0.9rem;
-  margin-top: 0.5rem;
-}
-
-.logout-btn:hover:not(:disabled) {
-  background: #334155;
-  border-color: #64748b;
-}
-
-.logout-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+:deep(.p-password-input) {
+  width: 100%;
 }
 </style>
-

@@ -1,13 +1,5 @@
 import { defineStore } from "pinia";
-import {
-  changeEmail,
-  changePassword,
-  loginUser,
-  logoutUser,
-  registerUser,
-  requestPasswordReset,
-  resetPassword,
-} from "../services/api";
+import { authService } from "../services/auth.service";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
@@ -19,47 +11,45 @@ export const useAuthStore = defineStore("auth", {
   actions: {
     async register(payload) {
       await this.executeTask(async () => {
-        const response = await registerUser(payload);
+        const response = await authService.register(payload);
         this.accessToken = response.access_token ?? "";
         this.statusMessage = response.message;
       });
     },
     async login(payload) {
       await this.executeTask(async () => {
-        const response = await loginUser(payload);
+        const response = await authService.login(payload);
         this.accessToken = response.access_token ?? "";
         this.statusMessage = response.message;
       });
     },
     async requestPasswordReset(payload) {
       await this.executeTask(async () => {
-        const response = await requestPasswordReset(payload);
+        const response = await authService.requestPasswordReset(payload);
         this.statusMessage = response.message;
       });
     },
     async resetPassword(payload) {
       await this.executeTask(async () => {
-        const response = await resetPassword(payload);
+        const response = await authService.resetPassword(payload);
         this.statusMessage = response.message;
       });
     },
     async changePassword(payload) {
       await this.executeTask(async () => {
-        const response = await changePassword(payload);
+        const response = await authService.changePassword(payload);
         this.statusMessage = response.message;
       });
     },
     async changeEmail(payload) {
       await this.executeTask(async () => {
-        const response = await changeEmail(payload);
+        const response = await authService.changeEmail(payload);
         this.statusMessage = response.message;
       });
     },
     async logout() {
       await this.executeTask(async () => {
-        const response = await logoutUser({
-          access_token: this.accessToken,
-        });
+        const response = await authService.logout(this.accessToken);
         this.accessToken = "";
         this.statusMessage = response.message;
       });
@@ -77,5 +67,7 @@ export const useAuthStore = defineStore("auth", {
       }
     },
   },
+  persist: {
+    paths: ["accessToken"],
+  },
 });
-

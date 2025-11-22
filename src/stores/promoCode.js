@@ -1,12 +1,5 @@
 import { defineStore } from "pinia";
-import {
-  createPromoCode,
-  getPromoCodes,
-  getPromoCodeById,
-  validatePromoCode,
-  updatePromoCode,
-  deletePromoCode,
-} from "../services/api";
+import { promoCodeService } from "../services/promoCode.service";
 import { useAuthStore } from "./auth";
 
 export const usePromoCodeStore = defineStore("promoCode", {
@@ -26,7 +19,7 @@ export const usePromoCodeStore = defineStore("promoCode", {
       }
 
       await this.executeTask(async () => {
-        const response = await getPromoCodes(authStore.accessToken, eventId);
+        const response = await promoCodeService.getAll(authStore.accessToken, eventId);
         this.promoCodes = response;
         this.statusMessage = "Промокоды загружены";
       });
@@ -38,7 +31,7 @@ export const usePromoCodeStore = defineStore("promoCode", {
       }
 
       await this.executeTask(async () => {
-        const response = await getPromoCodeById(id, authStore.accessToken);
+        const response = await promoCodeService.getById(id, authStore.accessToken);
         this.currentPromoCode = response;
       });
     },
@@ -47,7 +40,7 @@ export const usePromoCodeStore = defineStore("promoCode", {
       this.errorMessage = "";
       this.statusMessage = "";
       try {
-        const response = await validatePromoCode({
+        const response = await promoCodeService.validate({
           code,
           event_id: eventId,
           ticket_price: ticketPrice,
@@ -69,7 +62,7 @@ export const usePromoCodeStore = defineStore("promoCode", {
       }
 
       await this.executeTask(async () => {
-        const response = await createPromoCode(payload, authStore.accessToken);
+        const response = await promoCodeService.create(payload, authStore.accessToken);
         this.promoCodes.unshift(response);
         this.statusMessage = "Промокод успешно создан";
         return response;
@@ -82,7 +75,7 @@ export const usePromoCodeStore = defineStore("promoCode", {
       }
 
       await this.executeTask(async () => {
-        const response = await updatePromoCode(id, payload, authStore.accessToken);
+        const response = await promoCodeService.update(id, payload, authStore.accessToken);
         const index = this.promoCodes.findIndex((p) => p.id === id);
         if (index !== -1) {
           this.promoCodes[index] = response;
@@ -101,7 +94,7 @@ export const usePromoCodeStore = defineStore("promoCode", {
       }
 
       await this.executeTask(async () => {
-        await deletePromoCode(id, authStore.accessToken);
+        await promoCodeService.delete(id, authStore.accessToken);
         this.promoCodes = this.promoCodes.filter((p) => p.id !== id);
         if (this.currentPromoCode?.id === id) {
           this.currentPromoCode = null;
@@ -123,4 +116,3 @@ export const usePromoCodeStore = defineStore("promoCode", {
     },
   },
 });
-

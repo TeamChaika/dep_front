@@ -2,7 +2,7 @@
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { usePromoCodeStore } from "../stores/promoCode";
-import { getEventPublic } from "../services/api";
+import { eventService } from "../services/event.service";
 
 const route = useRoute();
 const router = useRouter();
@@ -296,7 +296,7 @@ onMounted(async () => {
   }
 
   try {
-    const response = await getEventPublic(eventId.value);
+    const response = await eventService.getPublic(eventId.value);
     event.value = response;
     
     // Устанавливаем самый дешевый тип билета по умолчанию

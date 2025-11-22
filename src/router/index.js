@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { useAuthStore } from "../stores/auth";
 
 import ForgotPasswordView from "../views/ForgotPasswordView.vue";
 import LoginView from "../views/LoginView.vue";
@@ -14,17 +15,17 @@ import EventPublicView from "../views/EventPublicView.vue";
 
 const routes = [
   { path: "/", redirect: "/login" },
-  { path: "/login", component: LoginView },
-  { path: "/register", component: RegisterView },
-  { path: "/forgot-password", component: ForgotPasswordView },
-  { path: "/establishments", component: EstablishmentsView },
-  { path: "/events", component: EventsView },
-  { path: "/deposits", component: DepositsView },
-  { path: "/tickets", component: TicketsView },
-  { path: "/promo-codes", component: PromoCodesView },
-  { path: "/event/:id", component: EventPublicView, name: "event-public" },
-  { path: "/payment/:link", component: PaymentView, name: "payment" },
-  { path: "/check-in/:qrCode", component: TicketCheckInView, name: "check-in" },
+  { path: "/login", component: LoginView, meta: { guest: true, layout: 'auth' } },
+  { path: "/register", component: RegisterView, meta: { guest: true, layout: 'auth' } },
+  { path: "/forgot-password", component: ForgotPasswordView, meta: { guest: true, layout: 'auth' } },
+  { path: "/establishments", component: EstablishmentsView, meta: { requiresAuth: true } },
+  { path: "/events", component: EventsView, meta: { requiresAuth: true } },
+  { path: "/deposits", component: DepositsView, meta: { requiresAuth: true } },
+  { path: "/tickets", component: TicketsView, meta: { requiresAuth: true } },
+  { path: "/promo-codes", component: PromoCodesView, meta: { requiresAuth: true } },
+  { path: "/check-in/:qrCode", component: TicketCheckInView, name: "check-in", meta: { requiresAuth: true } },
+  { path: "/event/:id", component: EventPublicView, name: "event-public", meta: { layout: 'empty' } },
+  { path: "/payment/:link", component: PaymentView, name: "payment", meta: { layout: 'empty' } },
 ];
 
 const router = createRouter({
@@ -32,5 +33,16 @@ const router = createRouter({
   routes,
 });
 
-export default router;
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore();
 
+  if (to.meta.requiresAuth && !authStore.accessToken) {
+    next("/login");
+  } else if (to.meta.guest && authStore.accessToken) {
+    next("/establishments");
+  } else {
+    next();
+  }
+});
+
+export default router;

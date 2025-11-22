@@ -1,11 +1,5 @@
 import { defineStore } from "pinia";
-import {
-  createEstablishment,
-  getEstablishments,
-  getEstablishmentById,
-  updateEstablishment,
-  deleteEstablishment,
-} from "../services/api";
+import { establishmentService } from "../services/establishment.service";
 import { useAuthStore } from "./auth";
 
 export const useEstablishmentStore = defineStore("establishment", {
@@ -24,7 +18,7 @@ export const useEstablishmentStore = defineStore("establishment", {
       }
 
       await this.executeTask(async () => {
-        const response = await getEstablishments(authStore.accessToken);
+        const response = await establishmentService.getAll(authStore.accessToken);
         this.establishments = response;
         this.statusMessage = "Заведения загружены";
       });
@@ -36,7 +30,7 @@ export const useEstablishmentStore = defineStore("establishment", {
       }
 
       await this.executeTask(async () => {
-        const response = await getEstablishmentById(id, authStore.accessToken);
+        const response = await establishmentService.getById(id, authStore.accessToken);
         this.currentEstablishment = response;
       });
     },
@@ -47,7 +41,7 @@ export const useEstablishmentStore = defineStore("establishment", {
       }
 
       await this.executeTask(async () => {
-        const response = await createEstablishment(payload, authStore.accessToken);
+        const response = await establishmentService.create(payload, authStore.accessToken);
         this.establishments.unshift(response);
         this.statusMessage = "Заведение успешно создано";
         return response;
@@ -60,7 +54,7 @@ export const useEstablishmentStore = defineStore("establishment", {
       }
 
       await this.executeTask(async () => {
-        const response = await updateEstablishment(id, payload, authStore.accessToken);
+        const response = await establishmentService.update(id, payload, authStore.accessToken);
         const index = this.establishments.findIndex((e) => e.id === id);
         if (index !== -1) {
           this.establishments[index] = response;
@@ -79,7 +73,7 @@ export const useEstablishmentStore = defineStore("establishment", {
       }
 
       await this.executeTask(async () => {
-        await deleteEstablishment(id, authStore.accessToken);
+        await establishmentService.delete(id, authStore.accessToken);
         this.establishments = this.establishments.filter((e) => e.id !== id);
         if (this.currentEstablishment?.id === id) {
           this.currentEstablishment = null;
@@ -101,4 +95,3 @@ export const useEstablishmentStore = defineStore("establishment", {
     },
   },
 });
-

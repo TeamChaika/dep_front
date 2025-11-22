@@ -1,13 +1,5 @@
 import { defineStore } from "pinia";
-import {
-  createTicket,
-  getTickets,
-  getTicketById,
-  getTicketByQR,
-  checkInTicket,
-  updateTicket,
-  deleteTicket,
-} from "../services/api";
+import { ticketService } from "../services/ticket.service";
 import { useAuthStore } from "./auth";
 
 export const useTicketStore = defineStore("ticket", {
@@ -26,7 +18,7 @@ export const useTicketStore = defineStore("ticket", {
       }
 
       await this.executeTask(async () => {
-        const response = await getTickets(authStore.accessToken, eventId);
+        const response = await ticketService.getAll(authStore.accessToken, eventId);
         this.tickets = response;
         this.statusMessage = "Билеты загружены";
       });
@@ -38,20 +30,19 @@ export const useTicketStore = defineStore("ticket", {
       }
 
       await this.executeTask(async () => {
-        const response = await getTicketById(id, authStore.accessToken);
+        const response = await ticketService.getById(id, authStore.accessToken);
         this.currentTicket = response;
       });
     },
     async fetchTicketByQR(qrCode) {
       await this.executeTask(async () => {
-        const response = await getTicketByQR(qrCode);
+        const response = await ticketService.getByQR(qrCode);
         this.currentTicket = response;
       });
     },
     async checkIn(qrCode, guestsCount) {
       await this.executeTask(async () => {
-        const response = await checkInTicket(qrCode, { guests_count: guestsCount });
-        // Обновляем билет в списке, если он там есть
+        const response = await ticketService.checkIn(qrCode, { guests_count: guestsCount });
         const index = this.tickets.findIndex((t) => t.qr_code === qrCode);
         if (index !== -1) {
           this.tickets[index] = response;
@@ -70,7 +61,7 @@ export const useTicketStore = defineStore("ticket", {
       }
 
       await this.executeTask(async () => {
-        const response = await createTicket(payload, authStore.accessToken);
+        const response = await ticketService.create(payload, authStore.accessToken);
         this.tickets.unshift(response);
         this.statusMessage = "Билет успешно создан";
         return response;
@@ -83,7 +74,7 @@ export const useTicketStore = defineStore("ticket", {
       }
 
       await this.executeTask(async () => {
-        const response = await updateTicket(id, payload, authStore.accessToken);
+        const response = await ticketService.update(id, payload, authStore.accessToken);
         const index = this.tickets.findIndex((t) => t.id === id);
         if (index !== -1) {
           this.tickets[index] = response;
@@ -102,7 +93,7 @@ export const useTicketStore = defineStore("ticket", {
       }
 
       await this.executeTask(async () => {
-        await deleteTicket(id, authStore.accessToken);
+        await ticketService.delete(id, authStore.accessToken);
         this.tickets = this.tickets.filter((t) => t.id !== id);
         if (this.currentTicket?.id === id) {
           this.currentTicket = null;
@@ -124,4 +115,3 @@ export const useTicketStore = defineStore("ticket", {
     },
   },
 });
-
