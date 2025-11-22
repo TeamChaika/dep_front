@@ -24,7 +24,21 @@ async function request(method, path, payload = null, token = null) {
   const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    const errorMessage = data?.detail ?? "Request failed";
+    let errorMessage = "Request failed";
+    
+    if (data?.detail) {
+      if (typeof data.detail === 'string') {
+        errorMessage = data.detail;
+      } else if (Array.isArray(data.detail)) {
+        // FastAPI validation error format
+        errorMessage = data.detail
+          .map(err => `${err.loc?.[1] || 'Field'}: ${err.msg}`)
+          .join('\n');
+      } else {
+        errorMessage = JSON.stringify(data.detail);
+      }
+    }
+    
     throw new Error(errorMessage);
   }
 
@@ -37,4 +51,3 @@ export const http = {
   put: (path, payload, token) => request("PUT", path, payload, token),
   delete: (path, token) => request("DELETE", path, null, token),
 };
-
