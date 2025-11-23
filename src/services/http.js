@@ -45,9 +45,34 @@ async function request(method, path, payload = null, token = null) {
   return data;
 }
 
+async function upload(path, file, token = null) {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const headers = {};
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    method: "POST",
+    headers,
+    body: formData,
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw new Error(data?.detail ?? "Failed to upload file");
+  }
+
+  return data;
+}
+
 export const http = {
   get: (path, token) => request("GET", path, null, token),
   post: (path, payload, token) => request("POST", path, payload, token),
   put: (path, payload, token) => request("PUT", path, payload, token),
   delete: (path, token) => request("DELETE", path, null, token),
+  upload: (path, file, token) => upload(path, file, token),
 };

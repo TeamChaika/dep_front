@@ -13,5 +13,6 @@ export const eventService = {
   getPublic: (id) => http.get(`/events/public/${id}`),
   update: (id, payload, token) => http.put(`/events/${id}`, payload, token),
   delete: (id, token) => http.delete(`/events/${id}`, token),
+  uploadPoster: (file, token) => http.upload("/upload/event-poster", file, token),
 };
 

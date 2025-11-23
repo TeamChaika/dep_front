@@ -81,6 +81,14 @@ export const useEventStore = defineStore("event", {
         this.statusMessage = "Событие удалено";
       });
     },
+    async uploadPoster(file) {
+      const authStore = useAuthStore();
+      if (!authStore.accessToken) {
+        throw new Error("Not authenticated");
+      }
+      
+      return await eventService.uploadPoster(file, authStore.accessToken);
+    },
     async executeTask(task) {
       this.loading = true;
       this.errorMessage = "";

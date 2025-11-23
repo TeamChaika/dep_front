@@ -28,20 +28,20 @@ const handleLogin = async () => {
 </script>
 
 <template>
-  <Card class="w-full shadow-lg border-0">
+  <Card class="w-full shadow-xl border border-supabase-border !bg-supabase-surface">
     <template #title>
-      <h2 class="text-2xl font-bold text-center text-slate-800 mb-2">Вход</h2>
-      <p class="text-center text-slate-500 text-sm font-normal">Добро пожаловать обратно</p>
+      <h2 class="text-2xl font-bold text-center text-supabase-text mb-2">Вход</h2>
+      <p class="text-center text-supabase-textSecondary text-sm font-normal">Добро пожаловать обратно</p>
     </template>
     <template #content>
       <form @submit.prevent="handleLogin" class="space-y-5 mt-4">
         <div class="flex flex-col gap-2">
-          <label for="email" class="text-sm font-medium text-slate-700">Email</label>
+          <label for="email" class="text-sm font-medium text-supabase-textSecondary">Email</label>
           <InputText id="email" v-model="email" type="email" placeholder="user@example.com" class="w-full" required />
         </div>
 
         <div class="flex flex-col gap-2">
-          <label for="password" class="text-sm font-medium text-slate-700">Пароль</label>
+          <label for="password" class="text-sm font-medium text-supabase-textSecondary">Пароль</label>
           <Password 
             id="password" 
             v-model="password" 
@@ -66,8 +66,8 @@ const handleLogin = async () => {
         </div>
 
         <div class="flex items-center justify-between mt-6 text-sm">
-          <router-link to="/register" class="text-primary-600 hover:text-primary-700 font-medium">Регистрация</router-link>
-          <router-link to="/forgot-password" class="text-slate-500 hover:text-slate-700">Забыли пароль?</router-link>
+          <router-link to="/register" class="text-supabase-brand hover:text-supabase-brandHover font-medium">Регистрация</router-link>
+          <router-link to="/forgot-password" class="text-supabase-textSecondary hover:text-white">Забыли пароль?</router-link>
         </div>
       </form>
     </template>

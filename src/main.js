@@ -8,6 +8,9 @@ import App from "./App.vue";
 import router from "./router";
 import "./assets/main.css";
 
+// Force dark mode class for Tailwind
+document.documentElement.classList.add('dark');
+
 const app = createApp(App);
 
 const pinia = createPinia();
@@ -18,6 +21,13 @@ app.use(router);
 app.use(PrimeVue, {
   theme: {
     preset: Aura,
+    options: {
+      darkModeSelector: '.dark',
+      cssLayer: {
+        name: 'primevue',
+        order: 'tailwind-base, primevue, tailwind-utilities'
+      }
+    }
   },
 });
 
